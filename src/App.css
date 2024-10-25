@@ -1,0 +1,32 @@
+
+
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+}
+
+h1, h2, h3 {
+  margin: 10px 0;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  width: 45%;
+}
+
+.card_row{
+  display: flex;
+  justify-content: space-evenly;
+}
+.chart-container {
+  width: 100%;
+  max-width: 440px; /* Set a max width */
+  margin: auto; /* Center the chart */
+}
+
