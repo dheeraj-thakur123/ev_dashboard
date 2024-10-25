@@ -135,9 +135,7 @@ const useEvData = ()=>{
     }
 
     const getVehicleDataByRange = ()=>{
-         // Filter vehicles with Electric Range <= rangeLimit
-    const filteredData = data.filter(vehicle => vehicle['Electric Range'] <= 20);
-    
+        const filteredData = data.filter(vehicle => vehicle['Electric Range'] <= 20);
         const citiesData = filteredData.reduce((acc, vehicle) => {
             const city = vehicle.City;
             if (!acc[city]) {
@@ -152,9 +150,76 @@ const useEvData = ()=>{
         }))
         return finalData;
     }
+    const getTopTeslaCities = (order='') => {
+        const teslaCityCount = {};
+        data.forEach(vehicle => {
+            if (vehicle.Make === 'TESLA') {
+                const city = vehicle.City;
+                teslaCityCount[city] = (teslaCityCount[city] || 0) + 1;
+            }
+        });
+        if(order){
+            const sortedCities = Object.entries(teslaCityCount)
+            .sort(([, countA], [, countB]) => countA - countB) 
+            .slice(0, 10) // Get top 10 cities
+            .map(([city, count]) => ({ city, count }));
     
+            return sortedCities;
 
-        return {vechileByRange:getVehicleDataByRange(),vehiclePercentage:getVehiclePercnetage(),vehicleLocationsData:getVehicleGeoLocation(),topVehicleTypeByCity:topVehicleTypeByCity(),numberOfVehicleModelsByYear:numberOfVehicleModelsByYear(),vehicleByManufacturer:topElectricVechicleByManufacturer(),vechicleRange:vechicleRangeDistibution(),vehicleType:vehicleType(),topCounty:getTopCountyByVehicle(),percentageEligible:calculatePercentageEligible(),mostCommonMake:getMostCommonMake(),avgElectricRange:avgElectricRange(),data}
+        }else{
+            const sortedCities = Object.entries(teslaCityCount)
+            .sort(([, countA], [, countB]) => countB - countA) 
+            .slice(0, 10) // Get top 10 cities
+            .map(([city, count]) => ({ city, count }));
+             return sortedCities;
+        }
+    };
+
+    const getTopElectricUtilty = ()=>{
+        const vehicle = data.reduce((acc,item)=>{
+            acc[item['Electric Utility']] =  (acc[item['Electric Utility']] || 0) + 1;
+            return acc;
+        },{})
+        const finalData = Object.entries(vehicle).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([util,count])=>({
+            util,
+            count
+        }))
+        return finalData;
+    }
+    const getHighestAndLowestMSRP = () => {
+        let highestMSRP = -Infinity;
+        let lowestMSRP = Infinity;
+        let highestCount = 0;
+        let lowestCount = 0;
+    
+        data.forEach(vehicle => {
+            const msrp = vehicle['Base MSRP'];
+    
+            if (msrp > highestMSRP) {
+                highestMSRP = msrp;
+                highestCount = 1;
+            } else if (msrp === highestMSRP) {
+                highestCount++;
+            }
+    
+            if (msrp < lowestMSRP) {
+                lowestMSRP = msrp;
+                lowestCount = 1;
+            } else if (msrp === lowestMSRP) {
+                lowestCount++;
+            }
+        });
+    
+        return [
+            { price: highestMSRP, count: highestCount },
+            { price: lowestMSRP, count: lowestCount }
+        ];
+    };
+    
+    
+    
+    
+        return {getHighestAndLowestMSRP:getHighestAndLowestMSRP(),getTopElectricUtilty:getTopElectricUtilty(),getMinModelByCity:getTopTeslaCities('min'),getTopModelsByCity:getTopTeslaCities(),vechileByRange:getVehicleDataByRange(),vehiclePercentage:getVehiclePercnetage(),vehicleLocationsData:getVehicleGeoLocation(),topVehicleTypeByCity:topVehicleTypeByCity(),numberOfVehicleModelsByYear:numberOfVehicleModelsByYear(),vehicleByManufacturer:topElectricVechicleByManufacturer(),vechicleRange:vechicleRangeDistibution(),vehicleType:vehicleType(),topCounty:getTopCountyByVehicle(),percentageEligible:calculatePercentageEligible(),mostCommonMake:getMostCommonMake(),avgElectricRange:avgElectricRange(),data}
 
 };
 

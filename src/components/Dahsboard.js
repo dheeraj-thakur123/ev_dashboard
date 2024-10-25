@@ -8,8 +8,8 @@ const GeoDistribution =  React.lazy(() => import('./geographicalDistribution'));
 Chart.register(CategoryScale, LinearScale, BarElement, Title,ArcElement,PointElement,LineElement,Tooltip);
 
 const Dashboard = () => {
-   const {data,avgElectricRange,mostCommonMake,percentageEligible,topCounty,vehicleType,vechicleRange,vehicleByManufacturer,numberOfVehicleModelsByYear,topVehicleTypeByCity,vehiclePercentage,vechileByRange} = useEvData();
-   console.log('data',vechileByRange);
+   const {data,avgElectricRange,mostCommonMake,percentageEligible,topCounty,vehicleType,vechicleRange,vehicleByManufacturer,numberOfVehicleModelsByYear,topVehicleTypeByCity,vehiclePercentage,vechileByRange,getTopModelsByCity,getMinModelByCity,getTopElectricUtilty,getHighestAndLowestMSRP} = useEvData();
+   console.log('data',getHighestAndLowestMSRP);
 
     //function to genrate random color
     const generateRandomColor = () => {
@@ -40,29 +40,60 @@ const Dashboard = () => {
    const barChartDataForTopCounty = {
         labels: topCounty.map(item => item.county),
         datasets: [{
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             minBarLength: 10,
             data: topCounty.map(item => item.count),
             backgroundColor: topCounty.map(()=>generateRandomColor()),
         }],
     };
+   //Ev Count by BASE msrp
+   const barChartDataForBaseMsrp = {
+    labels: getHighestAndLowestMSRP.map(item => item.price),
+    datasets: [{
+        label: 'Count',
+        minBarLength: 10,
+        data: getHighestAndLowestMSRP.map(item => item.count),
+        backgroundColor: getHighestAndLowestMSRP.map(()=>generateRandomColor()),
+    }],
+};
   
     //Top 10 city by vehicle count
     const barChartDataForTopCity = {
         labels: topVehicleTypeByCity.map(item => item.city),
         datasets: [{
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             minBarLength: 10,
             data: topVehicleTypeByCity.map(item => item.count),
             backgroundColor: topVehicleTypeByCity.map(()=>generateRandomColor()),
         }],
     };
-   
+
+       //Top 10 city by vehicle model by city
+       const barChartDataForTopModel = {
+        labels: getTopModelsByCity.map(item => item.city),
+        datasets: [{
+            label: 'No. of Vehicle',
+            minBarLength: 10,
+            data: getTopModelsByCity.map(item => item.count),
+            backgroundColor: getTopModelsByCity.map(()=>generateRandomColor()),
+        }],
+    };
+
+       //Top 10 lowest vehicle model by city 
+       const barChartDataForMinModel = {
+        labels: getTopElectricUtilty.map(item => item.util),
+        datasets: [{
+            label: 'Count',
+            // minBarLength: 10,
+            data: getTopElectricUtilty.map(item => item.count),
+            backgroundColor: getMinModelByCity.map(()=>generateRandomColor()),
+        }]
+    };
     //Vechicle Type
     const barChartDataForVechicleType = {
         labels: vehicleType.map(item => item.type),
         datasets: [{
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             data: vehicleType.map(item => item.count),
             backgroundColor: vehicleType.map(()=>generateRandomColor()),
         }],
@@ -74,7 +105,7 @@ const Dashboard = () => {
         labels: vechicleRange.map(val=>val.range),
         datasets: [{
             type: 'line',
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             data: vechicleRange.map(item=>item.count),
             borderColor: 'rgb(54, 162, 235)'
           }],
@@ -86,7 +117,7 @@ const Dashboard = () => {
     const topVechileByManufacturer = {
         labels: vehicleByManufacturer.map(item => item.type),
         datasets: [{
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             data: vehicleByManufacturer.map(item => item.count),
             backgroundColor: vehicleByManufacturer.map(()=>generateRandomColor())
         }],
@@ -96,7 +127,7 @@ const Dashboard = () => {
     const vehicleManufaturedByears = {
         labels: numberOfVehicleModelsByYear.map(item => item.year),
         datasets: [{
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             data: numberOfVehicleModelsByYear.map(item=>item.count),
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1
@@ -113,11 +144,11 @@ const Dashboard = () => {
           }]
     };
 
-       //Top 10 vehicle data
+       //Top 10 vehicle model by data
        const vehicleRangeDataPie = {
         labels: vechileByRange.map(item => item.city),
         datasets: [{
-            label: 'Number of Vehicle',
+            label: 'No. of Vehicle',
             data: vechileByRange.map(item=>item.count),
             hoverOffset: 4,
             backgroundColor: vechileByRange.map(()=>generateRandomColor())
@@ -142,14 +173,14 @@ const Dashboard = () => {
                 <Col>
                     <Card>
                         <h4 className="mt-3">Top 10 Counties by Number of Electric Vehicle</h4>
-                         <Bar data={barChartDataForTopCounty} options={createChartOptions('county','Number of Vehicles')} />
+                         <Bar data={barChartDataForTopCounty} options={createChartOptions('county','No. of Vehicles')} />
                     </Card>
                 </Col>
                 
                 <Col>
                     <Card>
                         <h4 className="mt-3">Top 10 Manufacturer by Number of Electric Vehicle</h4>
-                        <Bar data={topVechileByManufacturer} options={createChartOptions('Manufacturer','Number of Vehicles')} /> 
+                        <Bar data={topVechileByManufacturer} options={createChartOptions('Manufacturer','No. of Vehicles')} /> 
                     </Card>
                 </Col>
             </Row>
@@ -158,14 +189,14 @@ const Dashboard = () => {
                 <Col>
                     <Card>
                         <h4 className="mt-3">Top 10 City by Number of Electric Vehicle</h4>
-                        <Bar data={barChartDataForTopCity} options={createChartOptions('City','Number of Vehicles')} />
+                        <Bar data={barChartDataForTopCity} options={createChartOptions('City','No. of Vehicles')} />
                     </Card>
                 </Col>
                
                 <Col>
                     <Card>
                         <h4 className="mt-3">Vehicle Type Distribution</h4>
-                         <Bar data={barChartDataForVechicleType} options={createChartOptions('Vehicle Type','Number of Vehicles')} />
+                         <Bar data={barChartDataForVechicleType} options={createChartOptions('Vehicle Type','No. of Vehicles')} />
                     </Card>
                 </Col>
             </Row>
@@ -180,7 +211,7 @@ const Dashboard = () => {
                 <Col>
                     <Card>
                          <h4 className="mt-3">Vehicle Manufatured In Year's</h4>
-                         <Line data={vehicleManufaturedByears} options={createChartOptions('Years','Number of Vehicles')} />    
+                         <Line data={vehicleManufaturedByears} options={createChartOptions('Years','No. of Vehicles')} />    
                     </Card>
                 </Col>
 
@@ -208,8 +239,32 @@ const Dashboard = () => {
             <Row>
                 <Col>
                     <Card>
+                        <h4 className="mt-3">Top 10 Highest Maximum Tesla City</h4>
+                        <div>
+                            <Bar data={barChartDataForTopModel} options={createChartOptions('Model','No. of Vehicle')}/>
+                        </div>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card>
+                        <h4 className="mt-3">Top 10 Electric Utility Distribution</h4>
+                        <div className="chart-container">
+                            <Pie data={barChartDataForMinModel} options={createChartOptions('Count','No. of Vehicle')}/>
+                        </div>
+                    </Card>
+                </Col>
+            </Row>
+            <hr/>
+            <Row>
+            <Col>
+                     <Card>
+                        <h4 className="mt-3">Base MSRP Maximum and Minimum Distribution</h4>
+                        <Bar data={barChartDataForBaseMsrp} options={createChartOptions('Base MSRP','Count')}/>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card>
                         <h4 className="mt-3">Electric Vehicle Location</h4>
-                        {/* <GeoDistribution/> */}
                         <Suspense fallback={<div>Loading map...</div>}>
                             <GeoDistribution />
                         </Suspense>
